@@ -14,7 +14,7 @@ if uploaded_file is not None:
 
 else:
     st.warning('First you need to upload excel file')
-    data = pd.DataFrame()
+    data = pd.DataFrame({'site': None})
 
 # Create a text element and let the reader know the data is loading.
 data_load_state = st.text('Loading data...')
