@@ -29,20 +29,17 @@ try:
          datetime.date(2022, 1, 1))
     st.write('Selected date id: :', d)
 
-
-    # if st.checkbox('Show map'):
-    #     st.subheader('Map of all pickups')
-    #     st.map(data)
-
-
-    if site:
-        for s in site:
-            t_data = data[data['site'] == s]
-            t_data = t_data.set_index('hour')
-            t_data = t_data[t_data['date'] == d.strftime('%Y-%m-%d')]
-            st.bar_chart(t_data[['forecast', 'yeild', 'error']])
-            if st.checkbox(f'Show table for {s}'):
-                st.table(t_data[['hour', 'forecast', 'yeild', 'error']])
-
 except Exception as e:
     st.error('Something went wrong')
+    site = None
+
+if site:
+    for s in site:
+        t_data = data[data['site'] == s]
+        t_data = t_data.set_index('hour')
+        t_data = t_data[t_data['date'] == d.strftime('%Y-%m-%d')]
+        st.bar_chart(t_data[['forecast', 'yeild', 'error']])
+        if st.checkbox(f'Show table for {s}'):
+            st.table(t_data[['hour', 'forecast', 'yeild', 'error']])
+else:
+    pass
