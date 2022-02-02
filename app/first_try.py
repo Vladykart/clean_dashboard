@@ -15,23 +15,20 @@ if uploaded_file is not None:
 else:
     st.warning('First you need to upload excel file')
     data = pd.DataFrame()
-try:
-    # Create a text element and let the reader know the data is loading.
-    data_load_state = st.text('Loading data...')
-    # Load 10,000 rows of data into the dataframe.
 
-    # Notify the reader that the data was successfully loaded.
-    data_load_state.text("Done! (using st.cache)")
+# Create a text element and let the reader know the data is loading.
+data_load_state = st.text('Loading data...')
+# Load 10,000 rows of data into the dataframe.
 
-    site = st.multiselect('Select station', data.site.unique())
-    d = st.date_input(
-         "Select date",
-         datetime.date(2022, 1, 1))
-    st.write('Selected date id: :', d)
+# Notify the reader that the data was successfully loaded.
+data_load_state.text("Done! (using st.cache)")
 
-except Exception as e:
-    st.error('Something went wrong')
-    site = None
+site = st.multiselect('Select station', data.site.unique())
+d = st.date_input(
+     "Select date",
+     datetime.date(2022, 1, 1))
+st.write('Selected date id: :', d)
+
 
 if site:
     for s in site:
@@ -41,5 +38,3 @@ if site:
         st.bar_chart(t_data[['forecast', 'yeild', 'error']])
         if st.checkbox(f'Show table for {s}'):
             st.table(t_data[['hour', 'forecast', 'yeild', 'error']])
-else:
-    pass
