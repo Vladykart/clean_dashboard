@@ -13,7 +13,7 @@ if uploaded_file is not None:
     st.success('File was successfully uploaded')
 
 else:
-    st.warning('First you need to upload excel file')
+    st.error('First you need to upload excel file')
     data = pd.DataFrame()
 
 # Create a text element and let the reader know the data is loading.
@@ -37,4 +37,4 @@ if site:
         t_data = t_data[t_data['date'] == d.strftime('%Y-%m-%d')]
         st.bar_chart(t_data[['forecast', 'yeild', 'error']])
         if st.checkbox(f'Show table for {s}'):
-            st.table(t_data[['hour', 'forecast', 'yeild', 'error']])
+            st.table(t_data[['forecast', 'yeild', 'error']])
