@@ -9,8 +9,11 @@ st.title('Stations map')
 uploaded_file = st.file_uploader("Choose a file", type="xlsx")
 if uploaded_file is not None:
     data = dprep.load_and_prepare_data(uploaded_file)
-# else:
-#     data = dprep.load_and_prepare_data('mart_operative_forecasting_results.xlsx')
+    st.success('File was successfully uploaded')
+
+else:
+    st.warning('First you need to upload excel file')
+    pass
 # Create a text element and let the reader know the data is loading.
 data_load_state = st.text('Loading data...')
 # Load 10,000 rows of data into the dataframe.
