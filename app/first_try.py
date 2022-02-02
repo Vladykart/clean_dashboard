@@ -14,32 +14,35 @@ if uploaded_file is not None:
 
 else:
     st.warning('First you need to upload excel file')
-    data = pd.DataFrame({'site': None})
+    data = pd.DataFrame()
+try:
+    # Create a text element and let the reader know the data is loading.
+    data_load_state = st.text('Loading data...')
+    # Load 10,000 rows of data into the dataframe.
 
-# Create a text element and let the reader know the data is loading.
-data_load_state = st.text('Loading data...')
-# Load 10,000 rows of data into the dataframe.
+    # Notify the reader that the data was successfully loaded.
+    data_load_state.text("Done! (using st.cache)")
 
-# Notify the reader that the data was successfully loaded.
-data_load_state.text("Done! (using st.cache)")
-
-site = st.multiselect('Select station', data.site.unique())
-d = st.date_input(
-     "Select date",
-     datetime.date(2022, 1, 1))
-st.write('Selected date id: :', d)
-
-
-# if st.checkbox('Show map'):
-#     st.subheader('Map of all pickups')
-#     st.map(data)
+    site = st.multiselect('Select station', data.site.unique())
+    d = st.date_input(
+         "Select date",
+         datetime.date(2022, 1, 1))
+    st.write('Selected date id: :', d)
 
 
-if site:
-    for s in site:
-        t_data = data[data['site'] == s]
-        t_data = t_data.set_index('hour')
-        t_data = t_data[t_data['date'] == d.strftime('%Y-%m-%d')]
-        st.bar_chart(t_data[['forecast', 'yeild', 'error']])
-        if st.checkbox(f'Show table for {s}'):
-            st.table(t_data[['hour', 'forecast', 'yeild', 'error']])
+    # if st.checkbox('Show map'):
+    #     st.subheader('Map of all pickups')
+    #     st.map(data)
+
+
+    if site:
+        for s in site:
+            t_data = data[data['site'] == s]
+            t_data = t_data.set_index('hour')
+            t_data = t_data[t_data['date'] == d.strftime('%Y-%m-%d')]
+            st.bar_chart(t_data[['forecast', 'yeild', 'error']])
+            if st.checkbox(f'Show table for {s}'):
+                st.table(t_data[['hour', 'forecast', 'yeild', 'error']])
+
+except Exception as e:
+    st.exception(e)
