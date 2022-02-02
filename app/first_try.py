@@ -45,4 +45,4 @@ try:
                 st.table(t_data[['hour', 'forecast', 'yeild', 'error']])
 
 except Exception as e:
-    st.exception(e)
+    st.error('Something went wrong')
