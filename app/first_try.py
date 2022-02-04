@@ -50,16 +50,29 @@ if page == 'map':
         st.table(map_data)
     midpoint = (np.average(map_data["lat"]), np.average(map_data["lon"]))
 
-    match choose_radio:
-        case 'forecast':
-            forecast_map_data = map_data[['site', 'forecast', 'lat', 'lon']]
-            draw_map(forecast_map_data, midpoint[0], midpoint[1], 5)
-        case 'error':
-            error_map_data = map_data[['site', 'error', 'lat', 'lon']]
-            draw_map(error_map_data, midpoint[0], midpoint[1], 5)
-        case _:
-            yeild_map_data = map_data[['site', 'yeild', 'lat', 'lon']]
-            draw_map(yeild_map_data, midpoint[0], midpoint[1], 5)
+    # match choose_radio:
+    #     case 'forecast':
+    #         forecast_map_data = map_data[['site', 'forecast', 'lat', 'lon']]
+    #         draw_map(forecast_map_data, midpoint[0], midpoint[1], 5)
+    #     case 'error':
+    #         error_map_data = map_data[['site', 'error', 'lat', 'lon']]
+    #         draw_map(error_map_data, midpoint[0], midpoint[1], 5)
+    #     case _:
+    #         yeild_map_data = map_data[['site', 'yeild', 'lat', 'lon']]
+    #         draw_map(yeild_map_data, midpoint[0], midpoint[1], 5)
+
+    if choose_radio == 'forecast':
+        forecast_map_data = map_data[['site', 'forecast', 'lat', 'lon']]
+        draw_map(forecast_map_data, midpoint[0], midpoint[1], 5)
+    elif choose_radio == 'error':
+        error_map_data = map_data[['site', 'error', 'lat', 'lon']]
+        draw_map(error_map_data, midpoint[0], midpoint[1], 5)
+    else:
+        yeild_map_data = map_data[['site', 'yeild', 'lat', 'lon']]
+        draw_map(yeild_map_data, midpoint[0], midpoint[1], 5)
+
+
+
     map_data = map_data.sort_values('yeild').set_index('site')
 
     st.bar_chart(map_data[['forecast', 'yeild', 'error']], width=1080)
