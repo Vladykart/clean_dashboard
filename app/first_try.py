@@ -1,4 +1,4 @@
-import forecast as forecast
+
 import streamlit as st
 from map_layer import draw_map
 import numpy as np
