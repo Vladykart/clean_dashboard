@@ -13,10 +13,10 @@ def load_excel_data(filename):
 
 def prepare_data(df):
     def lowercase(x): return str(x).lower()
-    df[['lat', 'long']] = list(
+    df[['lat', 'lon']] = list(
         df['coordinates'].str.replace(r'[()]', '', regex=True).str.split(','))
     df = df.drop(['coordinates'], axis=1)
-    df[['lat', 'lon']] = df[['lat', 'long']].astype('float64')
+    df[['lat', 'lon']] = df[['lat', 'lon']].astype('float64')
     df.rename(lowercase, axis='columns', inplace=True)
     df['region'] = df['region'].apply(lowercase)
     return df
