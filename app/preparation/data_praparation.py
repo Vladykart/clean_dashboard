@@ -11,6 +11,14 @@ def load_excel_data(filename):
     )
 
 
+def assign_shortage_excess_err(df):
+    df = (df.assign(
+        error_shortage=lambda x: x['error'].apply(lambda x : x if x < 0 else 0),
+        error_excess=lambda x: x['error'].apply(lambda x : x if x > 0 else 0)
+            ))
+    return df
+
+
 def prepare_data(df):
     def lowercase(x): return str(x).lower()
     df[['lat', 'lon']] = list(
@@ -19,11 +27,23 @@ def prepare_data(df):
     df[['lat', 'lon']] = df[['lat', 'lon']].astype('float64')
     df.rename(lowercase, axis='columns', inplace=True)
     df['region'] = df['region'].apply(lowercase)
+    df = assign_shortage_excess_err(df)
     return df
 
 
 def group_data(df):
     return df.groupby(by=['region', 'site', 'date'])
+
+
+@st.cache
+def aggregate_data(df):
+    df_g = df
+    df_g = df_g.groupby(by=['site', 'date'])
+    df_g = df_g.agg({'forecast': 'sum',
+                               'yeild': 'sum',
+                               'error_shortage': 'sum',
+                               'error_excess': 'sum'})
+    return df_g
 
 
 @st.cache

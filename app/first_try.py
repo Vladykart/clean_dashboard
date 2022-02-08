@@ -1,13 +1,16 @@
+from turtle import width
 
 import streamlit as st
 from map_layer import draw_map
+from preparation.data_praparation import aggregate_data
+from visualisations.visual import draw_piechart
 import numpy as np
 from preparation import data_praparation as dprep, data_praparation
 
 
 # -- Set page config
 app_title = 'Stations map'
-st.set_page_config(page_title=app_title, page_icon=":eyeglasses:")
+st.set_page_config(page_title=app_title, page_icon=":eyeglasses:", layout="wide")
 
 # -- Default detector list
 page_list = ['map', 'station', 'V1']
@@ -17,12 +20,14 @@ uploaded_file = st.sidebar.file_uploader("Choose a file", type="xlsx")
 
 if uploaded_file is not None:
     data = dprep.load_and_prepare_data(uploaded_file)
+    aggregated_data = aggregate_data(data.copy())
     data_load_state = st.sidebar.text('Loading data...')
     data_load_state.text("Done! (using st.cache)")
     st.sidebar.success('File was successfully uploaded')
 else:
     st.warning('First you need to upload excel file')
     data = []
+    aggregated_data = []
 
 d = st.sidebar.date_input(
     "Select date",
@@ -93,14 +98,17 @@ elif page == 'station':
         for s in site:
             t_data = data[data['site'] == s]
             t_data = t_data.set_index('hour')
-            t_data['error'] = t_data['error'].abs()
             t_data = t_data[t_data['date'] == d.strftime('%Y-%m-%d')]
-            st.bar_chart(t_data[['forecast', 'yeild', 'error']])
-            if st.checkbox(f'Show table for {s}'):
+            t_aggregated_data = aggregated_data.loc[s, [d.strftime('%Y-%m-%d')], :]
+            col_1, col_2 = st.columns([43,100])
+
+            with col_1:
                 st.table(t_data[['forecast', 'yeild', 'error']])
-
-
-
+            with col_2:
+                c = st.container()
+                c.bar_chart(t_data[['forecast', 'yeild', 'error']], width=1080, height=400)
+                c.plotly_chart(draw_piechart(t_aggregated_data).update_layout(width=550))
+                c.bar_chart(t_data[['error_shortage', 'error_excess']].abs(), width=1080, height=400)
 
 
 elif page == 'V1':
