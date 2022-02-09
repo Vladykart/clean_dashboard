@@ -1,4 +1,3 @@
-from turtle import width
 
 import streamlit as st
 from map_layer import draw_map
