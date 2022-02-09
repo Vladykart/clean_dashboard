@@ -3,10 +3,11 @@ from turtle import width
 import streamlit as st
 from map_layer import draw_map
 from preparation.data_praparation import aggregate_data
-from visualisations.visual import draw_piechart
+from visualisations.visual import draw_piechart, draw_error_plot, draw_all_station_chart
 import numpy as np
+import pandas as pd
 from preparation import data_praparation as dprep, data_praparation
-
+from forecasting_metrics import evaluate_all
 
 # -- Set page config
 app_title = 'Stations map'
@@ -39,7 +40,7 @@ st.write('Selected date id: :', d)
 
 if page == 'map':
     st.title('Stations map')
-    choose_list = ('yeald', 'forecast', 'error',)
+    choose_list = ('yeild', 'forecast', 'error',)
     choose_radio = st.sidebar.radio('Choose metric', choose_list)
     map_data = data.groupby(
         by=['date', 'site', 'region']).agg(
@@ -76,8 +77,6 @@ if page == 'map':
         yeild_map_data = map_data[['site', 'yeild', 'lat', 'lon']]
         draw_map(yeild_map_data, midpoint[0], midpoint[1], 5)
 
-
-
     map_data = map_data.sort_values('yeild').set_index('site')
 
     st.bar_chart(map_data[['forecast', 'yeild', 'error']], width=1080)
@@ -96,20 +95,54 @@ elif page == 'station':
 
     if site:
         for s in site:
-            t_data = data[data['site'] == s]
-            t_data = t_data.set_index('hour')
-            t_data = t_data[t_data['date'] == d.strftime('%Y-%m-%d')]
-            t_aggregated_data = aggregated_data.loc[s, [d.strftime('%Y-%m-%d')], :]
-            col_1, col_2 = st.columns([43,100])
+            with st.expander(label=s):
+                t_data = data[data['site'] == s]
+                t_data = t_data.set_index('hour')
+                t_data = t_data[t_data['date'] == d.strftime('%Y-%m-%d')]
+                predicted = t_data['forecast'].abs()
+                actual = t_data['yeild'].abs()
+                t_aggregated_data = aggregated_data.loc[s, [d.strftime('%Y-%m-%d')], :]
+                col_1, col_2 = st.columns([43, 100])
 
-            with col_1:
-                st.table(t_data[['forecast', 'yeild', 'error']])
-            with col_2:
-                c = st.container()
-                c.bar_chart(t_data[['forecast', 'yeild', 'error']], width=1080, height=400)
-                c.plotly_chart(draw_piechart(t_aggregated_data).update_layout(width=550))
-                c.bar_chart(t_data[['error_shortage', 'error_excess']].abs(), width=1080, height=400)
+                with col_1:
+                    st.table(t_data[['forecast', 'yeild', 'error']])
+                with col_2:
+                    c = st.container()
+                    c.bar_chart(t_data[['forecast', 'yeild', 'error']], width=1080, height=400)
+                    c.plotly_chart(draw_piechart(t_aggregated_data).update_layout(width=550))
+                st.plotly_chart(draw_error_plot(t_data).update_layout(width=1000,
+                                                                      height=600,
+                                                                      template='plotly_dark',
+                                                                      paper_bgcolor='rgba(0,0,0,0)',
+                                                                      plot_bgcolor='rgba(0,0,0,0)'
+                                                                      ))
+                col_3, col_4 = st.columns([43, 100])
+                with col_3:
+                    e = evaluate_all(actual, predicted)
+                    e = pd.DataFrame([e])
+                    err = st.multiselect(
+                        f'Error metrics for {s}: ', e.T.index.tolist(), help='choose error metrics',
+                        default=['mae', 'rmse', 'mse'])
+                with col_4:
+                    st.table(e[err].T)
+
+            # c.bar_chart(t_data[['error_shortage', 'error_excess']].abs(), width=1080, height=400)
 
 
 elif page == 'V1':
-    pass
+    v_data = aggregated_data.loc[:, [d.strftime('%Y-%m-%d')], :]
+    metrics_df = v_data.describe()
+    choose_list = ('yeild', 'forecast', 'error_shortage', 'error_excess')
+    col_1, col_2 = st.columns([1, 6])
+    with col_1:
+        choose_radio = st.radio('Choose sort metric', choose_list)
+    with col_2:
+        st.table(metrics_df)
+
+    st.plotly_chart(
+        draw_all_station_chart(v_data, sort_by=choose_radio).update_layout(width=1200,
+                                                                           height=600,
+                                                                           template='plotly_dark',
+                                                                           paper_bgcolor='rgba(0,0,0,0)',
+                                                                           plot_bgcolor='rgba(0,0,0,0)'
+                                                                           ))
