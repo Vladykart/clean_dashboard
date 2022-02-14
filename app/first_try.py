@@ -38,6 +38,8 @@ d = st.sidebar.date_input(
 st.write('Selected date id: :', d)
 
 if page == 'map':
+    col_1, col_2 = st.columns([19, 8])
+    v_data = aggregated_data.loc[:, [d.strftime('%Y-%m-%d')], :]
     st.title('Stations map')
     choose_list = ('yeild', 'forecast', 'error',)
     choose_radio = st.sidebar.radio('Choose metric', choose_list)
@@ -51,8 +53,6 @@ if page == 'map':
 
     map_data = map_data[map_data['date'] == d.strftime('%Y-%m-%d')]
     map_data['error'] = map_data['error'].abs()
-    if st.checkbox(f'Show table for stations'):
-        st.table(map_data)
     midpoint = (np.average(map_data["lat"]), np.average(map_data["lon"]))
 
     # match choose_radio:
@@ -68,18 +68,39 @@ if page == 'map':
 
     if choose_radio == 'forecast':
         forecast_map_data = map_data[['site', 'forecast', 'lat', 'lon']]
-        draw_map(forecast_map_data, midpoint[0], midpoint[1], 5)
+        with col_1:
+            draw_map(forecast_map_data, midpoint[0], midpoint[1], 5)
     elif choose_radio == 'error':
         error_map_data = map_data[['site', 'error', 'lat', 'lon']]
-        draw_map(error_map_data, midpoint[0], midpoint[1], 5)
+        with col_1:
+            draw_map(error_map_data, midpoint[0], midpoint[1], 5)
     else:
         yeild_map_data = map_data[['site', 'yeild', 'lat', 'lon']]
-        draw_map(yeild_map_data, midpoint[0], midpoint[1], 5)
+        with col_1:
+            draw_map(yeild_map_data, midpoint[0], midpoint[1], 5)
 
     map_data = map_data.sort_values('yeild').set_index('site')
+    with col_2:
+        c = st.container()
+        c.plotly_chart(draw_piechart(v_data).update_layout(width=550))
+    col_3, col_4, col_5 = st.columns([16, 8, 8])
+    with col_3:
+        c1 = st.container()
+        c1.plotly_chart(
+            draw_all_station_chart(v_data, sort_by=choose_radio).update_layout(
+                                                                               template='plotly_dark',
+                                                                               paper_bgcolor='rgba(0,0,0,0)',
+                                                                               plot_bgcolor='rgba(0,0,0,0)'
+                                                                               ))
+    with col_5:
+        c2 = st.container()
+        c2.plotly_chart(draw_error_plot(data.groupby(by=['hour']).agg('sum')).update_layout(
+                                                                      template='plotly_dark',
+                                                                      paper_bgcolor='rgba(0,0,0,0)',
+                                                                      plot_bgcolor='rgba(0,0,0,0)'
+                                                                      ))
 
-    st.bar_chart(map_data[['forecast', 'yeild', 'error']], width=1080)
-
+    st.table(map_data)
 
 elif page == 'station':
     st.title('Stations charts')
