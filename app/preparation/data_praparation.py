@@ -4,7 +4,7 @@ import streamlit as st
 
 
 def load_excel_data(filename):
-    return pd.read_excel(
+    return pd.read_csv(
         # LOCAL_DATA_PATH.joinpath(filename),
         filename,
         converters={'date': pd.to_datetime},
