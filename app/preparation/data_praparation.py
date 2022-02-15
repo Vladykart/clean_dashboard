@@ -4,10 +4,10 @@ import streamlit as st
 
 
 def load_excel_data(filename):
-    return pd.read_csv(
+    return pd.read_pickle(
         # LOCAL_DATA_PATH.joinpath(filename),
         filename,
-        converters={'date': pd.to_datetime},
+        # converters={'date': pd.to_datetime},
     )
 
 
