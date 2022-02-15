@@ -4,6 +4,7 @@ import streamlit as st
 
 
 def load_excel_data(filename):
+    print(filename)
     return pd.read_pickle(
         # LOCAL_DATA_PATH.joinpath(filename),
         filename,
