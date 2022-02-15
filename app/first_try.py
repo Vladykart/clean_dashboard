@@ -18,7 +18,8 @@ page_list = ['map', 'station', 'V1']
 # -- Choose page
 page = st.sidebar.selectbox('Page', page_list)
 # uploaded_file = st.sidebar.file_uploader("Choose a file", type="xlsx")
-url = 'https://github.com/Vladykart/clean_dashboard/blob/dc8ec2ceed4b6585a0eeb6770fa5503a57f41075/data/mart_operative_forecasting_results.csv'
+
+url = 'https://raw.githubusercontent.com/Vladykart/clean_dashboard/dc8ec2ceed4b6585a0eeb6770fa5503a57f41075/data/mart_operative_forecasting_results.csv?token=GHSAT0AAAAAABQQE72FMPKI3PDFVJENNCKYYQLL3GA'
 uploaded_file = url
 
 if uploaded_file is not None:

@@ -1,6 +1,8 @@
 import pandas as pd
 from settings.settings import LOCAL_DATA_PATH
 import streamlit as st
+import ssl
+
 
 
 def load_excel_data(filename):
@@ -9,6 +11,7 @@ def load_excel_data(filename):
         # LOCAL_DATA_PATH.joinpath(filename),
         filename,
         converters={'date': pd.to_datetime},
+        index_col=0
     )
 
 
