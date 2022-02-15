@@ -11,11 +11,13 @@ def load_excel_data(filename):
         # LOCAL_DATA_PATH.joinpath(filename),
         filename,
         converters={'date': pd.to_datetime},
-        index_col=0
+        delimiter=';'
     )
 
 
 def assign_shortage_excess_err(df):
+    df['error'] = df['error'].str.replace(',','.')
+    df['error'] = df['error'].astype('float64')
     df = (df.assign(
         error_shortage=lambda x: x['error'].apply(lambda x : x if x < 0 else 0),
         error_excess=lambda x: x['error'].apply(lambda x : x if x > 0 else 0)

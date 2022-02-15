@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from preparation import data_praparation as dprep, data_praparation
 from forecasting_metrics import evaluate_all
-
+import ssl
 # -- Set page config
 app_title = 'Stations map'
 st.set_page_config(page_title=app_title, page_icon=":eyeglasses:", layout="wide")
@@ -18,9 +18,8 @@ page_list = ['map', 'station', 'V1']
 # -- Choose page
 page = st.sidebar.selectbox('Page', page_list)
 # uploaded_file = st.sidebar.file_uploader("Choose a file", type="xlsx")
-
-url = 'https://raw.githubusercontent.com/Vladykart/clean_dashboard/dc8ec2ceed4b6585a0eeb6770fa5503a57f41075/data/mart_operative_forecasting_results.csv?token=GHSAT0AAAAAABQQE72FMPKI3PDFVJENNCKYYQLL3GA'
-uploaded_file = url
+ssl._create_default_https_context = ssl._create_unverified_context
+uploaded_file = 'https://raw.githubusercontent.com/Vladykart/clean_dashboard/master/data/mart_operative_forecasting_results.csv'
 
 if uploaded_file is not None:
     data = dprep.load_and_prepare_data(uploaded_file)
