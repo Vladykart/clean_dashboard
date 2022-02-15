@@ -18,7 +18,7 @@ page_list = ['map', 'station', 'V1']
 # -- Choose page
 page = st.sidebar.selectbox('Page', page_list)
 # uploaded_file = st.sidebar.file_uploader("Choose a file", type="xlsx")
-uploaded_file = LOCAL_DATA_PATH.joinpath('mart_operative_forecasting_results.csv')
+uploaded_file = 'data/mart_operative_forecasting_results.csv'
 
 if uploaded_file is not None:
     data = dprep.load_and_prepare_data(uploaded_file)
