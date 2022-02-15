@@ -2,6 +2,7 @@
 import streamlit as st
 from map_layer import draw_map
 from preparation.data_praparation import aggregate_data
+from settings.settings import LOCAL_DATA_PATH
 from visualisations.visual import draw_piechart, draw_error_plot, draw_all_station_chart
 import numpy as np
 import pandas as pd
@@ -16,7 +17,8 @@ st.set_page_config(page_title=app_title, page_icon=":eyeglasses:", layout="wide"
 page_list = ['map', 'station', 'V1']
 # -- Choose page
 page = st.sidebar.selectbox('Page', page_list)
-uploaded_file = st.sidebar.file_uploader("Choose a file", type="xlsx")
+# uploaded_file = st.sidebar.file_uploader("Choose a file", type="xlsx")
+uploaded_file = LOCAL_DATA_PATH.joinpath('mart_operative_forecasting_results.xlsx')
 
 if uploaded_file is not None:
     data = dprep.load_and_prepare_data(uploaded_file)
